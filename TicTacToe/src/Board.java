@@ -49,6 +49,20 @@ public class Board {
 	}
 	
 	/**
+	 * Returns whether current position on board occupied.
+	 * 
+	 * @param position location on board to check
+	 * @return boolean depending on whether location filled
+	 */
+	public boolean isPosEmpty(int position) {
+		position--;
+		if(position > 8 || position < 0 || currentBoard[position] != 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * Checks if a player has won and returns the player number.
 	 * 
 	 * @return the player that won
@@ -87,7 +101,7 @@ public class Board {
 	
 	/**
 	 * Returns integer value of the currentBoard at position input.
-	 * If out of range of array, returns 0.
+	 * If out of range of array, returns -1.
 	 * 
 	 * @param input board position
 	 * @return integer based on currentBoard value
@@ -96,7 +110,7 @@ public class Board {
 		if(input >= 0 && input < currentBoard.length) {
 			return currentBoard[input];
 		} else {
-			return 0;
+			return -1;
 		}
 	}
 	

@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -12,7 +13,10 @@ public class main {
 		Scanner userInput;
 		userInput = new Scanner(System.in);
 		
-		initializeUserOptions(userInput);
+		while(userOptions(userInput)) {
+			int playerSetting = playerSetting(userInput);
+			playGame(userInput, playerSetting);
+		}
 	}
 	
 	/**
@@ -20,23 +24,39 @@ public class main {
 	 * Reads user input.
 	 * 
 	 * @param userInput scanner that reads console input stream
+	 * @return boolean based on user input
 	 */
-	private static void initializeUserOptions(Scanner userInput) {
-		boolean playGame = true;
+	private static boolean userOptions(Scanner userInput) {
 		
-		while(playGame) {
-			playGame(userInput);
-			System.out.println("Would you like to play another game (y/n)?");
-			int newGameFormatted = newGameFormat(userInput.nextLine());
-			while(newGameFormatted == -1) {
-				System.out.println("Enter either 'y' or 'n'.");
-				newGameFormatted = newGameFormat(userInput.nextLine());
-			}
-			
-			if(newGameFormatted == 0) {
-				playGame = false;
-			}	
+		System.out.println("Would you like to play a new game (y/n)?");
+		int newGameFormatted = newGameFormat(userInput.nextLine());
+		while(newGameFormatted == -1) {
+			System.out.println("Enter either 'y' or 'n'.");
+			newGameFormatted = newGameFormat(userInput.nextLine());
 		}
+			
+		if(newGameFormatted == 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Prints player settings and reads user input.
+	 * 
+	 * @param userInput scanner that reads console input stream
+	 * @return playerSetting selected
+	 */
+	private static int playerSetting(Scanner userInput) {
+		
+		System.out.println("Who are the players?");
+		System.out.println("1 for Human vs. Human, 2 for Human vs. Random, 3 for Random vs. Random");
+		int playerSetting = numberFormat(userInput.nextLine(), 1, 3);
+		while(playerSetting == -1) {
+			System.out.println("1 for Human vs. Human, 2 for Human vs. Random, 3 for Random vs. Random");
+			playerSetting = numberFormat(userInput.nextLine(), 1, 3);
+		}
+		return playerSetting;
 	}
 	
 	/**
@@ -49,20 +69,38 @@ public class main {
 	 * 
 	 * @param userInput scanner that reads console input stream
 	 */
-	private static void playGame(Scanner userInput) {
+	private static void playGame(Scanner userInput, int playerSetting) {
 		Board currentBoard = new Board();
-		int currentPlayer = 1;
+		Random randomGen = new Random();
+		int currentPlayer = randomNumberInRange(1, 2, randomGen);
 		int winner;
+		RandomPlayer randomPlayer = new RandomPlayer();
+		
 		
 		while(currentBoard.isPlaying()) {
-			System.out.println("Player " + String.valueOf(currentPlayer) + " Move (1-9): ");
-			int move = positionFormat(userInput.nextLine());
+			int move = 0;
 			
-			while(move == 0 || currentBoard.setBoardValue(currentPlayer, move) == false) {
-				System.out.println("Enter a value between 1 and 9 with an empty slot.");
-				move = positionFormat(userInput.nextLine());
+			switch(playerSetting) {
+				case 1:
+					move = playerMove(userInput, currentBoard, currentPlayer);
+					break;
+				case 2:
+					if(currentPlayer == 1) {
+						move = playerMove(userInput, currentBoard, currentPlayer);
+					} else {
+						move = randomPlayer.getMove(currentBoard);
+						System.out.println("Random Move: ");
+					}
+					break;
+				case 3:
+					move = randomPlayer.getMove(currentBoard);
+					System.out.println("Random " + String.valueOf(currentPlayer) + " Move: ");
+					break;
+				default:
+					break;
 			}
 			
+			currentBoard.setBoardValue(currentPlayer, move);
 			printBoard(currentBoard);
 			
 			if(currentPlayer == 1) {
@@ -81,9 +119,29 @@ public class main {
 	}
 	
 	/**
+	 * Reads user input to select move.
+	 * Verifies move available.
+	 * 
+	 * @param userInput scanner that reads console input stream
+	 * @param currentBoard instance of class Board
+	 * @param currentPlayer player selecting move
+	 * @return selected move
+	 */
+	private static int playerMove(Scanner userInput, Board currentBoard, int currentPlayer) {
+		System.out.println("Player " + String.valueOf(currentPlayer) + " Move (1-9): ");
+		int move = numberFormat(userInput.nextLine(), 1, 9);
+		
+		while(move == -1 || currentBoard.isPosEmpty(move) == false) {
+			System.out.println("Enter a value between 1 and 9 with an empty slot.");
+			move = numberFormat(userInput.nextLine(), 1, 9);
+		}
+		return move;
+	}
+	
+	/**
 	 * Prints the current board configuration to the console output.
 	 * 
-	 * @param board instance of the Board class
+	 * @param board instance of class Board
 	 */
 	private static void printBoard(Board board) {
 		int value;
@@ -116,18 +174,18 @@ public class main {
 	 * @param input string input from the user
 	 * @return integer formatted result
 	 */
-	private static int positionFormat(String input) {
+	private static int numberFormat(String input, int min, int max) {
 		int result;
 		try {
 			result = Integer.parseInt(input);
 		} catch(NumberFormatException e) {
-			return 0;
+			return -1;
 		}
 		
-		if(result > 0 && result < 10) {
+		if(result >= min && result <= max) {
 			return result;
 		}
-		return 0;
+		return -1;
 	}
 	
 	/**
@@ -144,5 +202,17 @@ public class main {
 		} else {
 			return -1;
 		}
+	}
+	
+	/**
+	 * Returns a random integer in a specified range.
+	 * 
+	 * @param min minimum of range
+	 * @param max maximum of range
+	 * @param randomGen instance of class random
+	 * @return random integer in range
+	 */
+	public static int randomNumberInRange(int min, int max, Random randomGen) {
+		return randomGen.nextInt(max - min + 1) + min;
 	}
 }

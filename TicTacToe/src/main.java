@@ -58,13 +58,8 @@ public class main {
 			System.out.println("Player " + String.valueOf(currentPlayer) + " Move (1-9): ");
 			int move = positionFormat(userInput.nextLine());
 			
-			while(move == 0) {
-				System.out.println("Enter a value between 1 and 9.");
-				move = positionFormat(userInput.nextLine());
-			}
-			
-			while(currentBoard.setBoardValue(currentPlayer, move) == false) {
-				System.out.println("There is already a token in this position. Enter a value between 1 and 9.");
+			while(move == 0 || currentBoard.setBoardValue(currentPlayer, move) == false) {
+				System.out.println("Enter a value between 1 and 9 with an empty slot.");
 				move = positionFormat(userInput.nextLine());
 			}
 			

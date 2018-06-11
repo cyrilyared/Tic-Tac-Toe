@@ -10,9 +10,6 @@ public class RandomPlayer {
 	Random randomGen;
 	int selectedMove;
 
-	/**
-	 * Creates new instance of RandomPlayer.
-	 */
 	public RandomPlayer() {
 		randomGen = new Random();
 		selectedMove = -1;

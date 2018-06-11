@@ -17,6 +17,25 @@ public class Board {
 		resetBoard();
 	}
 	
+	public Board(int[] currentBoard, int moveNumber, boolean isPlaying) {
+		for (int i = 0; i < currentBoard.length; i++) {
+			this.currentBoard[i] = currentBoard[i];
+		}
+		
+		this.moveNumber = moveNumber;
+		this.isPlaying = isPlaying;
+	}
+	
+	/**
+	 * Creates a copy of the current board.
+	 * 
+	 * @param board to be copied
+	 * @return copy of a board
+	 */
+	public Board copyBoard(Board board) {
+		return new Board(board.currentBoard, board.moveNumber, board.isPlaying);
+	}
+	
 	/**
 	 * Initializes the board with zeros and resets the move number.
 	 */
@@ -24,6 +43,7 @@ public class Board {
 		for(int i = 0; i < currentBoard.length; i++) {
 			currentBoard[i] = 0;
 		}
+		
 		moveNumber = 0;
 		isPlaying = true;
 	}
@@ -143,6 +163,20 @@ public class Board {
 	 */
 	public boolean isPlaying() {
 		return isPlaying;
+	}
+	
+	/**
+	 * Switches the current player.
+	 * 
+	 * @param currentPlayer
+	 * @return new player
+	 */
+	public int switchPlayer(int currentPlayer) {
+		if(currentPlayer == 1) {
+			return 2;
+		} else {
+			return 1;
+		}
 	}
 	
 }

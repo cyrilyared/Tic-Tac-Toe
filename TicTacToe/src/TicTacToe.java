@@ -7,7 +7,7 @@ import java.util.Scanner;
  * @author cyrilyared
  *
  */
-public class main {
+public class TicTacToe {
 	
 	public static void main(String[] args) {
 		Scanner userInput;
@@ -27,12 +27,12 @@ public class main {
 	 * @return boolean based on user input
 	 */
 	private static boolean userOptions(Scanner userInput) {
-		
 		System.out.println("Would you like to play a new game (y/n)?");
-		int newGameFormatted = newGameFormat(userInput.nextLine());
+		int newGameFormatted = yesNoOption(userInput.nextLine());
+		
 		while(newGameFormatted == -1) {
 			System.out.println("Enter either 'y' or 'n'.");
-			newGameFormatted = newGameFormat(userInput.nextLine());
+			newGameFormatted = yesNoOption(userInput.nextLine());
 		}
 			
 		if(newGameFormatted == 0) {
@@ -48,13 +48,15 @@ public class main {
 	 * @return playerSetting selected
 	 */
 	private static int playerSetting(Scanner userInput) {
-		
 		System.out.println("Who are the players?");
 		System.out.println("1 for Human vs. Human, 2 for Human vs. Random, 3 for Random vs. Random");
-		int playerSetting = numberFormat(userInput.nextLine(), 1, 3);
+		System.out.println("4 for Human vs. Minimax, 5 for Minimax vs. Random, 6 for Minimax vs. Minimax");
+		int playerSetting = numberFormat(userInput.nextLine(), 1, 6);
+		
 		while(playerSetting == -1) {
 			System.out.println("1 for Human vs. Human, 2 for Human vs. Random, 3 for Random vs. Random");
-			playerSetting = numberFormat(userInput.nextLine(), 1, 3);
+			System.out.println("4 for Human vs. Minimax, 5 for Minimax vs. Random, 6 for Minimax vs. Minimax");
+			playerSetting = numberFormat(userInput.nextLine(), 1, 6);
 		}
 		return playerSetting;
 	}
@@ -68,14 +70,14 @@ public class main {
 	 * Checks for any potential wins or draws.
 	 * 
 	 * @param userInput scanner that reads console input stream
+	 * @param playerSetting setting selected for user type
 	 */
 	private static void playGame(Scanner userInput, int playerSetting) {
 		Board currentBoard = new Board();
 		Random randomGen = new Random();
+		RandomPlayer randomPlayer = new RandomPlayer();
 		int currentPlayer = randomNumberInRange(1, 2, randomGen);
 		int winner;
-		RandomPlayer randomPlayer = new RandomPlayer();
-		
 		
 		while(currentBoard.isPlaying()) {
 			int move = 0;
@@ -89,25 +91,44 @@ public class main {
 						move = playerMove(userInput, currentBoard, currentPlayer);
 					} else {
 						move = randomPlayer.getMove(currentBoard);
-						System.out.println("Random Move: ");
+						System.out.println("Random " + String.valueOf(currentPlayer) + " Move: ");
 					}
 					break;
 				case 3:
 					move = randomPlayer.getMove(currentBoard);
 					System.out.println("Random " + String.valueOf(currentPlayer) + " Move: ");
 					break;
+				case 4:
+					if(currentPlayer == 1) {
+						move = playerMove(userInput, currentBoard, currentPlayer);
+					} else {
+						Minimax minimaxPlayer = new Minimax(currentPlayer);
+						move = minimaxPlayer.getMove(currentBoard);
+						System.out.println("Minimax " + String.valueOf(currentPlayer) + " Move: ");
+					}
+					break;
+				case 5:
+					if(currentPlayer == 1) {
+						Minimax minimaxPlayer = new Minimax(currentPlayer);
+						move = minimaxPlayer.getMove(currentBoard);
+						System.out.println("Minimax " + String.valueOf(currentPlayer) + " Move: ");
+					} else {
+						move = randomPlayer.getMove(currentBoard);
+						System.out.println("Random " + String.valueOf(currentPlayer) + " Move: ");
+					}
+					break;
+				case 6:
+					Minimax minimaxPlayer = new Minimax(currentPlayer);
+					move = minimaxPlayer.getMove(currentBoard);
+					System.out.println("Minimax " + String.valueOf(currentPlayer) + " Move: ");
+					break;
 				default:
 					break;
 			}
 			
 			currentBoard.setBoardValue(currentPlayer, move);
-			printBoard(currentBoard);
-			
-			if(currentPlayer == 1) {
-				currentPlayer = 2;
-			} else {
-				currentPlayer = 1;
-			}
+			currentBoard.printBoard();
+			currentPlayer = currentBoard.switchPlayer(currentPlayer);
 		}
 		winner = currentBoard.checkWin();
 		
@@ -139,39 +160,11 @@ public class main {
 	}
 	
 	/**
-	 * Prints the current board configuration to the console output.
-	 * 
-	 * @param board instance of class Board
-	 */
-	private static void printBoard(Board board) {
-		int value;
-		
-		for(int i = 0; i < 3; i++) {
-			System.out.print("| ");
-			
-			for (int j = 0; j < 3; j++) {
-				value = board.getPositionValue(i*3+j);
-				
-				switch(value) {
-					case 1:
-						System.out.print("X ");
-						break;
-					case 2:
-						System.out.print("O ");
-						break;
-					default:
-						System.out.print("  ");
-						break;
-				}
-			}
-			System.out.println("|");
-		}
-	}
-	
-	/**
-	 * Returns formatted user input string for position on board.
+	 * Returns integer from user input string.
 	 * 
 	 * @param input string input from the user
+	 * @param min minimum integer accepted
+	 * @param max maximum integer accepted
 	 * @return integer formatted result
 	 */
 	private static int numberFormat(String input, int min, int max) {
@@ -189,12 +182,12 @@ public class main {
 	}
 	
 	/**
-	 * Returns 1 if user wants new game, 0 if user does not want new game or -1 if formatting error.
+	 * Returns 1 if yes selected, 0 if no selected or -1 if formatting error.
 	 * 
 	 * @param input string input from user
-	 * @return integer formatted result
+	 * @return integer result
 	 */
-	private static int newGameFormat(String input) {
+	private static int yesNoOption(String input) {
 		if(input.toUpperCase().equals("Y")) {
 			return 1;
 		} else if(input.toUpperCase().equals("N")) {

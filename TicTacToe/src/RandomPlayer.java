@@ -7,8 +7,9 @@ import java.util.Random;
  *
  */
 public class RandomPlayer {
+	
 	Random randomGen;
-	int selectedMove;
+	private int selectedMove;
 
 	public RandomPlayer() {
 		randomGen = new Random();
@@ -23,10 +24,8 @@ public class RandomPlayer {
 	 */
 	public int getMove(Board board) {
 		while(!board.isPosEmpty(selectedMove)) {
-			selectedMove = main.randomNumberInRange(1, 9, randomGen);
+			selectedMove = TicTacToe.randomNumberInRange(1, 9, randomGen);
 		}
 		return selectedMove;
-	}
-	
-	
+	}	
 }

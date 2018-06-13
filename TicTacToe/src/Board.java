@@ -85,7 +85,7 @@ public class Board {
 	/**
 	 * Checks if a player has won and returns the player number.
 	 * 
-	 * @return the player that won
+	 * @return the player that won or zero if no current winner
 	 */
 	public int checkWin() {
 		
@@ -179,4 +179,31 @@ public class Board {
 		}
 	}
 	
+	/**
+	 * Prints the current board configuration to the console output.
+	 */
+	public void printBoard() {
+		int value;
+		
+		for(int i = 0; i < 3; i++) {
+			System.out.print("| ");
+			
+			for (int j = 0; j < 3; j++) {
+				value = getPositionValue(i*3+j);
+				
+				switch(value) {
+					case 1:
+						System.out.print("X ");
+						break;
+					case 2:
+						System.out.print("O ");
+						break;
+					default:
+						System.out.print("  ");
+						break;
+				}
+			}
+			System.out.println("|");
+		}
+	}
 }

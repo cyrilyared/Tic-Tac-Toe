@@ -25,21 +25,21 @@ public class Minimax {
 			if(currentBoard.isPosEmpty(pos + 1)) {
 				Board boardCopy = currentBoard.copyBoard(currentBoard);
 				boardCopy.setBoardValue(playerNum, pos + 1);
-				possibleMovesScore[pos] = evaluateMove(boardCopy, boardCopy.switchPlayer(playerNum), 0);
+				possibleMovesScore[pos] = evaluateMove(boardCopy, boardCopy.switchPlayer(playerNum), 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
 			}
 		}
 		return (checkMaxPlayable(currentBoard, possibleMovesScore) + 1);
 	}
 	
 	/**
-	 * Simulates all moves using minimax and assigns values to each position.
+	 * Simulates all moves using minimax with alpha-beta pruning and assigns values to each position.
 	 * 
 	 * @param currentBoard
 	 * @param player player number being evaluated
 	 * @param depth adjustment for future values
 	 * @return integer value for strength of move
 	 */
-	private int evaluateMove(Board currentBoard, int player, int depth) {
+	private int evaluateMove(Board currentBoard, int player, int depth, int alpha, int beta) {
 		if(!currentBoard.isPlaying()) {
 			if(currentBoard.checkWin() == playerNum) {
 				return 10 - depth;
@@ -50,27 +50,35 @@ public class Minimax {
 			}
 		}
 		
-		int bestValue = 0;
-		boolean valueFound = false;
+		int bestValueMax = Integer.MIN_VALUE;
+		int bestValueMin = Integer.MAX_VALUE;
 	
 		for(int pos = 0; pos < 9; pos++) {
 			if(currentBoard.isPosEmpty(pos + 1)) {
 				Board boardCopy = currentBoard.copyBoard(currentBoard);
 				boardCopy.setBoardValue(player, pos + 1);
 				
-				if(valueFound) {
-					if(player == playerNum) {
-						bestValue = findMax(bestValue, evaluateMove(boardCopy, boardCopy.switchPlayer(player), depth + 1));
-					} else {
-						bestValue = findMin(bestValue, evaluateMove(boardCopy, boardCopy.switchPlayer(player), depth + 1));
+				if(player == playerNum) {
+					bestValueMax = findMax(bestValueMax, evaluateMove(boardCopy, boardCopy.switchPlayer(player), depth + 1, alpha, beta));
+					alpha = findMax(alpha, bestValueMax);
+					if(beta <= alpha) {
+						break;
 					}
 				} else {
-					bestValue = evaluateMove(boardCopy, boardCopy.switchPlayer(player), depth + 1);
-					valueFound = true;
+					bestValueMin = findMin(bestValueMin, evaluateMove(boardCopy, boardCopy.switchPlayer(player), depth + 1, alpha, beta));
+					beta = findMin(beta, bestValueMin);
+					if(beta <= alpha) {
+						break;
+					}
 				}
 			}
 		}
-		return bestValue;
+		
+		if(player == playerNum) {
+			return bestValueMax;
+		} else {
+			return bestValueMin;
+		}
 	}
 	
 	/**

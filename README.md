@@ -8,4 +8,4 @@ It will eventually serve as a basis for experiments involving machine learning a
 * **TicTacToe** Class: Provides a simple UI for interacting with the board.
 * **Board** Class: Provides all the necessary methods for setting and getting the state of the board.
 * **RandomPlayer** Class: Provides a simple framework for generating a random player.
-* **Minimax** Class: Creates a player which obtains moves using a variation of the minimax algorithm that considers depth.
+* **Minimax** Class: Creates a player which obtains moves using a variation of the minimax algorithm that considers depth. This algorithm is further optimized with alpha-beta pruning.

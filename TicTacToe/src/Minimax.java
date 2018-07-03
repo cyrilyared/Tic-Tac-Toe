@@ -37,6 +37,8 @@ public class Minimax {
 	 * @param currentBoard
 	 * @param player player number being evaluated
 	 * @param depth adjustment for future values
+	 * @param alpha for alpha-beta pruning
+	 * @param beta for alpha-beta pruning
 	 * @return integer value for strength of move
 	 */
 	private int evaluateMove(Board currentBoard, int player, int depth, int alpha, int beta) {

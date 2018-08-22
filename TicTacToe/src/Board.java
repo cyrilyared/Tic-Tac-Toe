@@ -39,7 +39,7 @@ public class Board {
 	/**
 	 * Initializes the board with zeros and resets the move number.
 	 */
-	private void resetBoard() {
+	public void resetBoard() {
 		for(int i = 0; i < currentBoard.length; i++) {
 			currentBoard[i] = 0;
 		}
